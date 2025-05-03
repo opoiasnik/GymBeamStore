@@ -1,7 +1,7 @@
 // app/products/[id]/ProductDetails.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,21 +11,11 @@ import {
     GiftIcon,
     ClockIcon,
 } from '@heroicons/react/24/outline';
-
-interface Product {
-    id: number;
-    title: string;
-    description: string;
-    price: number;
-    oldPrice?: number;
-    onSale?: boolean;
-    image: string;
-    category: string;
-    rating: { rate: number; count: number };
-}
+import type { Product } from '../../types';
 
 interface ProductDetailsProps {
     product: Product;
+    onClose?: () => void;
 }
 
 function Accordion({
@@ -57,44 +47,23 @@ function Accordion({
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const router = useRouter();
 
-    const [enriched, setEnriched] = useState<Product | null>(null);
-    useEffect(() => {
-        const raw = localStorage.getItem('enrichedProducts');
-        if (raw) {
-            try {
-                const arr: Product[] = JSON.parse(raw);
-                const found = arr.find((p) => p.id === product.id);
-                if (found) setEnriched(found);
-            } catch { }
-        }
-    }, [product.id]);
-
-
-    const displayPrice = enriched ? enriched.price : product.price;
-    const displayOldPrice = enriched ? enriched.oldPrice : product.oldPrice;
-    const displayOnSale = enriched ? enriched.onSale : false;
-
-    const discountPercent =
-        displayOnSale && displayOldPrice
-            ? Math.round(((displayOldPrice - displayPrice) / displayOldPrice) * 100)
-            : 0;
-
-
     const gallery = [product.image, product.image, product.image];
     const [mainImage, setMainImage] = useState(gallery[0]);
 
-    const totalDots = 5;
-    const rate = product.rating.rate ?? 0;
-    let dotColor = 'bg-gray-300';
-    if (rate >= 4) dotColor = 'bg-green-500';
-    else if (rate >= 2) dotColor = 'bg-yellow-400';
-    else dotColor = 'bg-red-500';
+    const rate = Math.round(product.rating?.rate ?? 0);
+    const count = product.rating?.count ?? 0;
+
+    const discountPercent =
+        product.onSale && product.oldPrice
+            ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+            : 0;
 
     return (
         <div className="w-full bg-white rounded-xl shadow-md overflow-hidden">
 
             <nav className="px-6 pt-6 text-sm text-gray-500">
-                Home / Products / <span className="text-gray-800">{product.title}</span>
+                Home / Products /{' '}
+                <span className="text-gray-800">{product.title}</span>
             </nav>
 
 
@@ -120,7 +89,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             </li>
                         ))}
                     </ul>
-                    <div className="flex-1 rounded-lg overflow-hidden bg-white">
+                    <div className="flex-1 rounded-lg overflow-hidden bg-gray-100">
                         <Image
                             src={mainImage}
                             alt={product.title}
@@ -134,34 +103,40 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                 <div className="flex-1 flex flex-col justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold text-gray-900">{product.title}</h1>
-                        <p className="text-sm text-gray-500 uppercase mt-1">{product.category}</p>
+                        <h1 className="text-2xl font-semibold text-gray-900">
+                            {product.title}
+                        </h1>
+                        <p className="text-sm text-gray-500 uppercase mt-1">
+                            {product.category}
+                        </p>
 
 
-                        <div className="flex items-center gap-2 mt-3">
-                            <div className="flex gap-1">
-                                {Array.from({ length: totalDots }).map((_, i) => (
-                                    <span
+                        <div className="flex items-center mt-3 gap-2">
+                            <div className="flex gap-[3px]">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <div
                                         key={i}
-                                        className={`w-3 h-3 rounded-full ${i < Math.round(rate) ? dotColor : 'bg-gray-200'
+                                        className={`w-3 h-3 rounded-full ${i < rate ? 'bg-green-500' : 'bg-gray-200'
                                             }`}
                                     />
                                 ))}
                             </div>
-                            <span className="text-sm text-gray-500">({product.rating.count})</span>
+                            <span className="text-sm text-gray-500">({count})</span>
                         </div>
 
 
-                        <p className="mt-4 text-gray-700 leading-relaxed">{product.description}</p>
+                        <p className="mt-4 text-gray-700 leading-relaxed">
+                            {product.description}
+                        </p>
                     </div>
 
 
                     <div className="mt-6">
                         <div className="flex items-baseline gap-4">
-                            {displayOnSale && displayOldPrice && (
+                            {product.onSale && product.oldPrice && (
                                 <>
                                     <span className="text-gray-400 line-through">
-                                        ${displayOldPrice.toFixed(2)}
+                                        ${product.oldPrice.toFixed(2)}
                                     </span>
                                     <span className="inline-block bg-red-100 text-red-600 text-xs font-semibold px-2 py-1 rounded">
                                         -{discountPercent}%
@@ -169,7 +144,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 </>
                             )}
                             <span className="text-3xl font-bold text-black">
-                                ${displayPrice.toFixed(2)}
+                                ${product.price.toFixed(2)}
                             </span>
                         </div>
                         <button
@@ -181,6 +156,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     </div>
                 </div>
             </div>
+
 
             <div className="border-t border-gray-200 px-6 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-2">
@@ -206,21 +182,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
             </div>
 
+
             <div className="px-6">
                 <Accordion title="Product Information">
-                    Add details like material, dimensions, origin, etc.
+                    Here you can add extra details such as material, dimensions, origin, etc.
                 </Accordion>
-                <Accordion title="Specifications">
-                    Technical specs: weight, SKU, certifications, and other data.
+                <Accordion title="Product Details">
+                    Technical specs: weight, SKU, certifications, and any other relevant data.
                 </Accordion>
-                <Accordion title="Usage Instructions">
-                    How to use or care for this product.
+                <Accordion title="Usage">
+                    Instructions on how to use or care for this product.
                 </Accordion>
                 <Accordion title="Ingredients">
-                    List of ingredients or materials.
+                    List of ingredients or materials used in this product.
                 </Accordion>
-                <Accordion title="Customer Reviews">
-                    User reviews, star ratings, and comments.
+                <Accordion title="Reviews">
+                    Customer reviews, star ratings, and comments will appear here.
                 </Accordion>
             </div>
         </div>

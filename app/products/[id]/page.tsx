@@ -1,25 +1,43 @@
 // app/products/[id]/page.tsx
-import ProductDetails from './ProductDetails'
-import { notFound } from 'next/navigation'
+'use client';
 
-export default async function ProductPage({
-    params,
-}: {
-    params: Promise<{ id: string }>
-}) {
-    const { id } = await params
+import { useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import ProductDetails from './ProductDetails';
+import type { Product } from '../../types';
 
-    const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
-        next: { revalidate: 60 },
-    })
-    if (!res.ok) return notFound()
+export default function ProductPage() {
+    const router = useRouter();
+    const { id } = useParams();
+    const [product, setProduct] = useState<Product | null>(null);
+
+    useEffect(() => {
+        if (!id) {
+
+            router.replace('/');
+            return;
+        }
 
 
-    const product = await res.json()
+        const raw = localStorage.getItem('enrichedProducts');
+        if (raw) {
+            const all: Product[] = JSON.parse(raw);
+            const found = all.find((p) => String(p.id) === id);
+            if (found) {
+                setProduct(found);
+                return;
+            }
+        }
+
+
+        router.replace('/');
+    }, [id, router]);
+
+    if (!product) return null;
 
     return (
         <main className="container mx-auto py-8">
             <ProductDetails product={product} />
         </main>
-    )
+    );
 }
