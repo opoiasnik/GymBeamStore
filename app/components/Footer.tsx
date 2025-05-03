@@ -119,7 +119,7 @@ const Footer: React.FC = () => {
             </div>
             <div className="border-t border-gray-700 pt-4 pb-6">
                 <div className="max-w-7xl mx-auto px-6 text-center text-sm text-gray-500">
-                    © 2023 GymBeam. All rights reserved.
+                    © 2025 GymBeam. All rights reserved.
                 </div>
             </div>
         </footer>
