@@ -11,22 +11,7 @@ import {
 } from '@heroicons/react/24/solid';
 import SearchBar from './SearchBar';
 import Pagination from './Pagination';
-
-interface Rating {
-    rate: number;
-    count: number;
-}
-
-interface Product {
-    id: number;
-    title: string;
-    description: string;
-    price: number;
-    oldPrice?: number;
-    onSale?: boolean;
-    image: string;
-    rating?: Rating;
-}
+import { Product } from '../types';
 
 interface PromoInfo {
     label: string;

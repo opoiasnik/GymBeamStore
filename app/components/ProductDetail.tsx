@@ -45,7 +45,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                 </button>
 
 
-                <div className="relative w-full h-48 sm:h-64 bg-gray-100">
+                <div className="relative w-full h-48 sm:h-64 bg-white">
                     <Image
                         src={product.image}
                         alt={product.title}
