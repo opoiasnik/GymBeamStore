@@ -3,6 +3,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
     StarIcon,
     FireIcon,
@@ -34,6 +35,7 @@ const PROMO_BADGES: PromoInfo[] = [
 ];
 
 
+
 const ICONS: Record<PromoInfo['iconName'], React.FC<React.SVGProps<SVGSVGElement>>> = {
     star: StarIcon,
     fire: FireIcon,
@@ -54,6 +56,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
     const [draftRating, setDraftRating] = useState(minRating);
     const [draftSort, setDraftSort] = useState(sortOrder);
     const ref = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
 
     const [promoMap, setPromoMap] = useState<Record<number, PromoInfo | null>>({});
@@ -234,7 +237,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                     return (
                         <div
                             key={product.id}
-                            onClick={() => onProductClick(product)}
+                            onClick={() => router.push(`/products/${product.id}`)}
                             className="relative bg-white rounded-2xl overflow-visible shadow-md p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                         >
 

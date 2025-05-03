@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ProductList from './components/ProductList';
-import ProductDetail from './components/ProductDetail';
+import ProductDetail from './products/[id]/ProductDetails';
 import { useProductState } from './hooks/useProductState';
 import { Product } from './types';
 import Header from './components/Header';
@@ -25,8 +25,7 @@ export default function HomePage() {
     const STORAGE_KEY = 'enrichedProducts';
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      // If products are already stored in localStorage, use them
-      // This is useful for testing or if you want to keep the existing products
+
     } else {
       fetch('https://fakestoreapi.com/products?limit=20')
         .then(r => r.json())
@@ -66,7 +65,7 @@ export default function HomePage() {
           });
 
           localStorage.setItem(STORAGE_KEY, JSON.stringify(enriched));
-          // This is where you would update the state with the enriched products
+
         })
         .catch(console.error);
     }
