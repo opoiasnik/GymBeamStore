@@ -1,9 +1,8 @@
 // components/ProductList.tsx
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import {
     StarIcon,
     FireIcon,
@@ -12,7 +11,7 @@ import {
 } from '@heroicons/react/24/solid';
 import SearchBar from './SearchBar';
 import Pagination from './Pagination';
-import { Product } from '../types';
+import type { Product } from '../types';
 
 interface PromoInfo {
     label: string;
@@ -20,21 +19,13 @@ interface PromoInfo {
     iconName: 'star' | 'fire' | 'thumb' | 'badge';
 }
 
-interface ProductListProps {
-    products: Product[];
-    onProductClick: (product: Product) => void;
-}
-
-
 const PROMO_BADGES: PromoInfo[] = [
     { label: 'Bestseller', color: 'bg-purple-600', iconName: 'badge' },
-    { label: 'Top Viewed', color: 'bg-yellow-500', iconName: 'star' },
+    { label: 'Top Rated', color: 'bg-yellow-500', iconName: 'star' },
     { label: 'Hot Deal', color: 'bg-red-500', iconName: 'fire' },
     { label: 'Popular', color: 'bg-gray-800', iconName: 'thumb' },
     { label: 'GymBeam Pick', color: 'bg-blue-600', iconName: 'badge' },
 ];
-
-
 
 const ICONS: Record<PromoInfo['iconName'], React.FC<React.SVGProps<SVGSVGElement>>> = {
     star: StarIcon,
@@ -43,41 +34,44 @@ const ICONS: Record<PromoInfo['iconName'], React.FC<React.SVGProps<SVGSVGElement
     badge: CheckBadgeIcon,
 };
 
-const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) => {
+interface ProductListProps {
+    products: Product[];
+    onCardClick: (product: Product) => void;
+}
+
+export default function ProductList({
+    products,
+    onCardClick,
+}: ProductListProps) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [onlySale, setOnlySale] = useState(false);
     const [minRating, setMinRating] = useState(0);
     const [sortOrder, setSortOrder] = useState<'none' | 'low' | 'high'>('none');
-    const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 12;
-    const [filtersOpen, setFiltersOpen] = useState(false);
+
     const [draftOnly, setDraftOnly] = useState(onlySale);
     const [draftRating, setDraftRating] = useState(minRating);
     const [draftSort, setDraftSort] = useState(sortOrder);
+    const [filtersOpen, setFiltersOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const router = useRouter();
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 12;
 
 
     const [promoMap, setPromoMap] = useState<Record<number, PromoInfo | null>>({});
 
-
     useEffect(() => {
         const key = 'promoMap';
         const stored = localStorage.getItem(key);
-        let map: Record<number, PromoInfo | null> = stored ? JSON.parse(stored) : {};
-
+        const map: Record<number, PromoInfo | null> = stored ? JSON.parse(stored) : {};
         let changed = false;
-        products.forEach(p => {
-            if (map[p.id] === undefined) {
 
+        products.forEach((p) => {
+            if (map[p.id] === undefined) {
                 const rate = p.rating?.rate ?? 0;
                 if (rate >= 3 && Math.random() < 0.7) {
-
-                    const badge = PROMO_BADGES[
-                        Math.floor(Math.random() * PROMO_BADGES.length)
-                    ];
-                    map[p.id] = badge;
+                    map[p.id] = PROMO_BADGES[Math.floor(Math.random() * PROMO_BADGES.length)];
                 } else {
                     map[p.id] = null;
                 }
@@ -104,9 +98,9 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
 
 
     let filtered = products
-        .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
-        .filter(p => (!onlySale || p.onSale))
-        .filter(p => (minRating === 0 || (p.rating?.rate ?? 0) >= minRating));
+        .filter((p) => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
+        .filter((p) => (!onlySale || p.onSale))
+        .filter((p) => minRating === 0 || (p.rating?.rate ?? 0) >= minRating);
 
 
     if (sortOrder !== 'none') {
@@ -119,10 +113,9 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
     const idxLast = currentPage * productsPerPage;
     const idxFirst = idxLast - productsPerPage;
     const currentProducts = filtered.slice(idxFirst, idxLast);
-    const paginate = (page: number) => setCurrentPage(page);
 
     return (
-        <div className="product-list-container bg-white px-4 sm:px-6 lg:px-8 py-6 max-w-screen-xl mx-auto">
+        <div className="bg-white px-4 sm:px-6 lg:px-8 py-6 max-w-screen-xl mx-auto">
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                 <SearchBar setSearchTerm={setSearchTerm} />
@@ -132,7 +125,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                             setDraftOnly(onlySale);
                             setDraftRating(minRating);
                             setDraftSort(sortOrder);
-                            setFiltersOpen(o => !o);
+                            setFiltersOpen((o) => !o);
                         }}
                         className="px-4 py-2 bg-gray-100 border rounded hover:bg-gray-200 transition"
                     >
@@ -146,7 +139,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                                     id="draftOnly"
                                     type="checkbox"
                                     checked={draftOnly}
-                                    onChange={() => setDraftOnly(d => !d)}
+                                    onChange={() => setDraftOnly((d) => !d)}
                                     className="h-4 w-4"
                                 />
                                 <label htmlFor="draftOnly" className="ml-2 text-sm cursor-pointer">
@@ -161,7 +154,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                                 <select
                                     id="draftRating"
                                     value={draftRating}
-                                    onChange={e => setDraftRating(+e.target.value)}
+                                    onChange={(e) => setDraftRating(+e.target.value)}
                                     className="flex-1 p-1 border rounded text-sm"
                                 >
                                     <option value={0}>All</option>
@@ -180,7 +173,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                                 <select
                                     id="draftSort"
                                     value={draftSort}
-                                    onChange={e => setDraftSort(e.target.value as any)}
+                                    onChange={(e) => setDraftSort(e.target.value as any)}
                                     className="flex-1 p-1 border rounded text-sm"
                                 >
                                     <option value="none">None</option>
@@ -220,25 +213,22 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
 
 
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {currentProducts.map(product => {
-                    const rate = product.rating?.rate || 0;
-                    const count = product.rating?.count || 0;
-
-
-                    const promo = promoMap[product.id];
-                    const IconComp = promo ? ICONS[promo.iconName] : null;
-
-
+                {currentProducts.map((product) => {
+                    const rate = product.rating?.rate ?? 0;
+                    const count = product.rating?.count ?? 0;
                     let dotColor = 'bg-gray-300';
                     if (rate >= 4) dotColor = 'bg-green-500';
                     else if (rate >= 2) dotColor = 'bg-yellow-400';
                     else dotColor = 'bg-red-500';
 
+                    const promo = promoMap[product.id];
+                    const IconComp = promo ? ICONS[promo.iconName] : null;
+
                     return (
                         <div
                             key={product.id}
-                            onClick={() => router.push(`/products/${product.id}`)}
-                            className="relative bg-white rounded-2xl overflow-visible shadow-md p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                            onClick={() => onCardClick(product)}
+                            className="relative bg-white rounded-2xl shadow-md p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                         >
 
                             {product.onSale && (
@@ -274,8 +264,6 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                             </h3>
 
 
-
-
                             <div className="flex items-center gap-2 mb-2">
                                 <div className="flex gap-[3px]">
                                     {Array.from({ length: 5 }).map((_, i) => (
@@ -289,7 +277,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                                 <span className="text-sm text-gray-500">({count})</span>
                             </div>
 
-
+                            {/* Price */}
                             <div className="flex items-center gap-2 mt-2">
                                 {product.onSale && (
                                     <span className="text-gray-400 line-through text-sm">
@@ -308,16 +296,14 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) =
                 })}
             </div>
 
-
+            {/* Pagination */}
             <div className="mt-8">
                 <Pagination
                     productsPerPage={productsPerPage}
                     totalProducts={filtered.length}
-                    paginate={paginate}
+                    paginate={setCurrentPage}
                 />
             </div>
         </div>
     );
-};
-
-export default ProductList;
+}
