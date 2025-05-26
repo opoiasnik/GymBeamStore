@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { PencilSquareIcon, CheckIcon } from '@heroicons/react/24/outline';
 
@@ -9,6 +9,8 @@ interface ProfileData {
     username: string;
     phone: string;
     promoCode: string;
+    firstname?: string;
+    lastname?: string;
 }
 
 export default function UserProfilePage() {
@@ -18,52 +20,82 @@ export default function UserProfilePage() {
         username: '',
         phone: '',
         promoCode: '',
+        firstname: '',
+        lastname: '',
     });
-    const [editing, setEditing] = useState({
-        username: false,
-        phone: false,
-        promoCode: false,
-    });
+    const [editingPromo, setEditingPromo] = useState(false);
+    const [loading, setLoading] = useState(true);
 
+    const originalUsernameRef = useRef<string | null>(null);
 
     useEffect(() => {
-        const currentEmail = localStorage.getItem('currentUser');
-        if (!currentEmail) {
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
             router.replace('/login');
             return;
         }
-        const saved = localStorage.getItem(`profile_${currentEmail}`);
+        originalUsernameRef.current = currentUser;
+        const saved = localStorage.getItem(`profile_${currentUser}`);
         if (saved) {
             setProfile(JSON.parse(saved));
+            setLoading(false);
         } else {
-            setProfile({
-                email: currentEmail,
-                username: '',
-                phone: '',
-                promoCode: '',
-            });
+            fetch('https://fakestoreapi.com/users')
+                .then(res => res.json())
+                .then(users => {
+                    const user = users.find((u: any) => u.username === currentUser);
+                    if (user) {
+                        const newProfile: ProfileData = {
+                            email: user.email,
+                            username: user.username,
+                            phone: user.phone,
+                            promoCode: '',
+                            firstname: user.name.firstname,
+                            lastname: user.name.lastname,
+                        };
+                        setProfile(newProfile);
+                        localStorage.setItem(`profile_${currentUser}`, JSON.stringify(newProfile));
+                    }
+                    setLoading(false);
+                });
         }
     }, [router]);
 
-    const toggleEdit = (field: keyof typeof editing) => {
-        setEditing(e => ({ ...e, [field]: !e[field] }));
+    const handlePromoChange: React.ChangeEventHandler<HTMLInputElement> = e => {
+        const { value } = e.target;
+        setProfile(p => ({ ...p, promoCode: value }));
     };
 
-    const handleChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-        const { name, value } = e.target;
-        setProfile(p => ({ ...p, [name]: value }));
+    const handlePromoEditToggle = () => {
+        if (editingPromo) {
+            const originalUsername = originalUsernameRef.current;
+            if (originalUsername) {
+                localStorage.setItem(`profile_${originalUsername}`, JSON.stringify(profile));
+            }
+        }
+        setEditingPromo(e => !e);
     };
 
     const handleDone = () => {
-        localStorage.setItem(`profile_${profile.email}`, JSON.stringify(profile));
+        const originalUsername = originalUsernameRef.current;
+        if (originalUsername) {
+            localStorage.setItem(`profile_${originalUsername}`, JSON.stringify(profile));
+        }
         router.push('/');
     };
 
-    const initial = profile.email.charAt(0).toUpperCase();
+    const initial = profile.email ? profile.email.charAt(0).toUpperCase() : '';
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <span>Loading profile...</span>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-100">
-
             <div className="relative bg-gray-200 h-32 sm:h-40">
                 <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 100">
                     <path
@@ -72,18 +104,13 @@ export default function UserProfilePage() {
                     />
                 </svg>
             </div>
-
-
             <div className="flex justify-center -mt-12 sm:-mt-16 relative">
                 <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-black flex items-center justify-center">
                     <span className="text-white text-3xl sm:text-4xl font-bold">{initial}</span>
                 </div>
             </div>
-
-
             <div className="mt-6 sm:mt-8 px-4 sm:px-6 lg:px-24">
                 <div className="max-w-md sm:max-w-lg mx-auto space-y-6">
-
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
                         <input
@@ -94,86 +121,72 @@ export default function UserProfilePage() {
                             className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
                         />
                     </div>
-
-
-                    <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input
+                            type="text"
+                            name="firstname"
+                            value={profile.firstname || ''}
+                            readOnly
+                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input
+                            type="text"
+                            name="lastname"
+                            value={profile.lastname || ''}
+                            readOnly
+                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                         <input
                             type="text"
                             name="username"
                             value={profile.username}
-                            onChange={handleChange}
-                            disabled={!editing.username}
-                            className={`w-full px-3 py-2 border ${editing.username ? 'border-blue-500 bg-white' : 'border-gray-300 bg-gray-200'
-                                } focus:outline-none`}
-                            placeholder="Enter your name"
+                            readOnly
+                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+                            placeholder="Enter your username"
                         />
-                        <button
-                            onClick={() => toggleEdit('username')}
-                            className="absolute top-2.5 right-3 text-gray-600 hover:text-gray-900"
-                            aria-label={editing.username ? 'Save name' : 'Edit name'}
-                        >
-                            {editing.username ? (
-                                <CheckIcon className="w-5 h-5" />
-                            ) : (
-                                <PencilSquareIcon className="w-5 h-5" />
-                            )}
-                        </button>
                     </div>
-
-
-                    <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone no.</label>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                         <input
                             type="tel"
                             name="phone"
                             value={profile.phone}
-                            onChange={handleChange}
-                            disabled={!editing.phone}
-                            className={`w-full px-3 py-2 border ${editing.phone ? 'border-blue-500 bg-white' : 'border-gray-300 bg-gray-200'
-                                } focus:outline-none`}
-                            placeholder="Enter your phone no."
+                            readOnly
+                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+                            placeholder="Enter your phone"
                         />
-                        <button
-                            onClick={() => toggleEdit('phone')}
-                            className="absolute top-2.5 right-3 text-gray-600 hover:text-gray-900"
-                            aria-label={editing.phone ? 'Save phone' : 'Edit phone'}
-                        >
-                            {editing.phone ? (
-                                <CheckIcon className="w-5 h-5" />
-                            ) : (
-                                <PencilSquareIcon className="w-5 h-5" />
-                            )}
-                        </button>
                     </div>
-
-
                     <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Promo Code</label>
                         <input
                             type="text"
                             name="promoCode"
                             value={profile.promoCode}
-                            onChange={handleChange}
-                            disabled={!editing.promoCode}
-                            className={`w-full px-3 py-2 border ${editing.promoCode ? 'border-blue-500 bg-white' : 'border-gray-300 bg-gray-200'
+                            onChange={handlePromoChange}
+                            disabled={!editingPromo}
+                            className={`w-full px-3 py-2 border ${editingPromo ? 'border-blue-500 bg-white' : 'border-gray-300 bg-gray-200'
                                 } focus:outline-none`}
                             placeholder="Enter your promo code"
                         />
                         <button
-                            onClick={() => toggleEdit('promoCode')}
+                            onClick={handlePromoEditToggle}
                             className="absolute top-2.5 right-3 text-gray-600 hover:text-gray-900"
-                            aria-label={editing.promoCode ? 'Save code' : 'Edit code'}
+                            aria-label={editingPromo ? 'Save code' : 'Edit code'}
                         >
-                            {editing.promoCode ? (
+                            {editingPromo ? (
                                 <CheckIcon className="w-5 h-5" />
                             ) : (
                                 <PencilSquareIcon className="w-5 h-5" />
                             )}
                         </button>
                     </div>
-
-
                     <button
                         onClick={handleDone}
                         className="w-full py-3 bg-black text-white font-semibold rounded tracking-wide hover:bg-gray-800 transition"

@@ -21,8 +21,12 @@ export default function HomePage() {
   } = useProductState();
 
   useEffect(() => {
-    setUsername(localStorage.getItem('currentUser'));
-  }, []);
+    const user = localStorage.getItem('currentUser');
+    setUsername(user);
+    if (!user) {
+      router.replace('/login');
+    }
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
