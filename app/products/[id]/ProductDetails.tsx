@@ -11,7 +11,7 @@ import {
     TruckIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
-import type { Product } from '../types';
+import type { Product } from '../../types';
 
 interface ProductDetailsProps {
     product: Product;
@@ -75,10 +75,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const [mainImage, setMainImage] = useState(product.image);
     const [selectedSize, setSelectedSize] = useState<typeof CLOTHING_SIZES[number] | null>(null);
     const [selectedColor, setSelectedColor] = useState(CLOTHING_COLORS[0].name);
-    const [selectedMetal, setSelectedMetal] = useState(JEWELRY_METALS[0]);
-    const [selectedLength, setSelectedLength] = useState(JEWELRY_LENGTHS[0]);
-    const [selectedCapacity, setSelectedCapacity] = useState(ELECTRONICS_CAPACITIES[0]);
-    const [selectedInterface, setSelectedInterface] = useState(ELECTRONICS_INTERFACES[0]);
+    const [selectedMetal, setSelectedMetal] = useState<
+        typeof JEWELRY_METALS[number]
+    >(JEWELRY_METALS[0]);
+
+    const [selectedLength, setSelectedLength] = useState<
+        typeof JEWELRY_LENGTHS[number]
+    >(JEWELRY_LENGTHS[0]);
+
+    const [selectedCapacity, setSelectedCapacity] = useState<
+        typeof ELECTRONICS_CAPACITIES[number]
+    >(ELECTRONICS_CAPACITIES[0]);
+
+    const [selectedInterface, setSelectedInterface] = useState<
+        typeof ELECTRONICS_INTERFACES[number]
+    >(ELECTRONICS_INTERFACES[0]);
+
     const [quantity, setQuantity] = useState(1);
     const [recommendations, setRecommendations] = useState<Product[]>([]);
 
@@ -192,8 +204,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         key={sz}
                                                         onClick={() => setSelectedSize(sz)}
                                                         className={`w-10 h-10 border rounded-lg flex items-center justify-center text-sm ${selectedSize === sz
-                                                                ? 'bg-orange-500 text-black'
-                                                                : 'bg-gray-800 text-white hover:border-orange-500'
+                                                            ? 'bg-orange-500 text-black'
+                                                            : 'bg-gray-800 text-white hover:border-orange-500'
                                                             }`}
                                                     >
                                                         {sz}
@@ -209,8 +221,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         key={c.name}
                                                         onClick={() => setSelectedColor(c.name)}
                                                         className={`w-8 h-8 rounded-full border ${selectedColor === c.name
-                                                                ? 'ring-2 ring-orange-500'
-                                                                : 'border-gray-700'
+                                                            ? 'ring-2 ring-orange-500'
+                                                            : 'border-gray-700'
                                                             } ${c.bg}`}
                                                     />
                                                 ))}
@@ -229,8 +241,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         key={m}
                                                         onClick={() => setSelectedMetal(m)}
                                                         className={`px-3 py-1 border rounded-full text-sm ${selectedMetal === m
-                                                                ? 'bg-orange-500 text-black'
-                                                                : 'bg-gray-800 text-white hover:border-orange-500'
+                                                            ? 'bg-orange-500 text-black'
+                                                            : 'bg-gray-800 text-white hover:border-orange-500'
                                                             }`}
                                                     >
                                                         {m}
@@ -246,8 +258,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         key={len}
                                                         onClick={() => setSelectedLength(len)}
                                                         className={`px-3 py-1 border rounded-full text-sm ${selectedLength === len
-                                                                ? 'bg-orange-500 text-black'
-                                                                : 'bg-gray-800 text-white hover:border-orange-500'
+                                                            ? 'bg-orange-500 text-black'
+                                                            : 'bg-gray-800 text-white hover:border-orange-500'
                                                             }`}
                                                     >
                                                         {len}
@@ -268,8 +280,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         key={cap}
                                                         onClick={() => setSelectedCapacity(cap)}
                                                         className={`px-3 py-1 border rounded-full text-sm ${selectedCapacity === cap
-                                                                ? 'bg-orange-500 text-black'
-                                                                : 'bg-gray-800 text-white hover:border-orange-500'
+                                                            ? 'bg-orange-500 text-black'
+                                                            : 'bg-gray-800 text-white hover:border-orange-500'
                                                             }`}
                                                     >
                                                         {cap}
@@ -285,8 +297,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         key={ifc}
                                                         onClick={() => setSelectedInterface(ifc)}
                                                         className={`px-3 py-1 border rounded-full text-sm ${selectedInterface === ifc
-                                                                ? 'bg-orange-500 text-black'
-                                                                : 'bg-gray-800 text-white hover:border-orange-500'
+                                                            ? 'bg-orange-500 text-black'
+                                                            : 'bg-gray-800 text-white hover:border-orange-500'
                                                             }`}
                                                     >
                                                         {ifc}
