@@ -43,7 +43,6 @@ export default function ProductList({
     products,
     onCardClick,
 }: ProductListProps) {
-
     const [searchTerm, setSearchTerm] = useState('');
     const [onlySale, setOnlySale] = useState(false);
     const [minRating, setMinRating] = useState(0);
@@ -58,34 +57,29 @@ export default function ProductList({
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 12;
 
-
     const [promoMap, setPromoMap] = useState<Record<number, PromoInfo | null>>({});
 
+    // Генерация и сохранение промо-бейджей
     useEffect(() => {
         const key = 'promoMap';
         const stored = localStorage.getItem(key);
         const map: Record<number, PromoInfo | null> = stored ? JSON.parse(stored) : {};
         let changed = false;
-
         products.forEach((p) => {
             if (map[p.id] === undefined) {
                 const rate = p.rating?.rate ?? 0;
-                if (rate >= 3 && Math.random() < 0.7) {
-                    map[p.id] = PROMO_BADGES[Math.floor(Math.random() * PROMO_BADGES.length)];
-                } else {
-                    map[p.id] = null;
-                }
+                map[p.id] =
+                    rate >= 3 && Math.random() < 0.7
+                        ? PROMO_BADGES[Math.floor(Math.random() * PROMO_BADGES.length)]
+                        : null;
                 changed = true;
             }
         });
-
-        if (changed) {
-            localStorage.setItem(key, JSON.stringify(map));
-        }
+        if (changed) localStorage.setItem(key, JSON.stringify(map));
         setPromoMap(map);
     }, [products]);
 
-
+    // Закрыть фильтры кликом вне
     useEffect(() => {
         const onClickOutside = (e: MouseEvent) => {
             if (filtersOpen && ref.current && !ref.current.contains(e.target as Node)) {
@@ -96,12 +90,11 @@ export default function ProductList({
         return () => window.removeEventListener('mousedown', onClickOutside);
     }, [filtersOpen]);
 
-
+    // Применение фильтров и сортировки
     let filtered = products
         .filter((p) => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
         .filter((p) => (!onlySale || p.onSale))
         .filter((p) => minRating === 0 || (p.rating?.rate ?? 0) >= minRating);
-
 
     if (sortOrder !== 'none') {
         filtered = [...filtered].sort((a, b) =>
@@ -109,14 +102,13 @@ export default function ProductList({
         );
     }
 
-
     const idxLast = currentPage * productsPerPage;
     const idxFirst = idxLast - productsPerPage;
     const currentProducts = filtered.slice(idxFirst, idxLast);
 
     return (
-        <div className="bg-white px-4 sm:px-6 lg:px-8 py-6 max-w-screen-xl mx-auto">
-
+        <div className="bg-black px-4 sm:px-6 lg:px-8 py-6 max-w-screen-xl mx-auto text-white">
+            {/* Search + Filters */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                 <SearchBar setSearchTerm={setSearchTerm} />
                 <div className="relative" ref={ref}>
@@ -127,35 +119,35 @@ export default function ProductList({
                             setDraftSort(sortOrder);
                             setFiltersOpen((o) => !o);
                         }}
-                        className="px-4 py-2 bg-gray-100 border rounded hover:bg-gray-200 transition"
+                        className="px-4 py-2 bg-gray-800 text-white border border-orange-500 rounded-lg hover:bg-orange-500 transition"
                     >
                         Filters ▼
                     </button>
                     {filtersOpen && (
-                        <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-lg p-4 space-y-3 z-20">
-
+                        <div className="absolute right-0 mt-2 w-64 bg-black border border-orange-500 rounded-lg shadow-lg p-4 space-y-3 z-20 text-white">
+                            {/* Only SALE */}
                             <div className="flex items-center">
                                 <input
                                     id="draftOnly"
                                     type="checkbox"
                                     checked={draftOnly}
                                     onChange={() => setDraftOnly((d) => !d)}
-                                    className="h-4 w-4"
+                                    className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-600 rounded"
                                 />
                                 <label htmlFor="draftOnly" className="ml-2 text-sm cursor-pointer">
                                     Only SALE
                                 </label>
                             </div>
-
+                            {/* Min Rating */}
                             <div className="flex items-center">
-                                <label htmlFor="draftRating" className="text-sm w-24">
+                                <label htmlFor="draftRating" className="text-sm w-24 font-semibold">
                                     Min Rating:
                                 </label>
                                 <select
                                     id="draftRating"
                                     value={draftRating}
                                     onChange={(e) => setDraftRating(+e.target.value)}
-                                    className="flex-1 p-1 border rounded text-sm"
+                                    className="flex-1 p-1 border border-gray-600 rounded bg-black text-white text-sm"
                                 >
                                     <option value={0}>All</option>
                                     <option value={1}>1★+</option>
@@ -165,24 +157,24 @@ export default function ProductList({
                                     <option value={5}>5★</option>
                                 </select>
                             </div>
-
+                            {/* Sort Price */}
                             <div className="flex items-center">
-                                <label htmlFor="draftSort" className="text-sm w-24">
+                                <label htmlFor="draftSort" className="text-sm w-24 font-semibold">
                                     Sort Price:
                                 </label>
                                 <select
                                     id="draftSort"
                                     value={draftSort}
                                     onChange={(e) => setDraftSort(e.target.value as any)}
-                                    className="flex-1 p-1 border rounded text-sm"
+                                    className="flex-1 p-1 border border-gray-600 rounded bg-black text-white text-sm"
                                 >
                                     <option value="none">None</option>
                                     <option value="low">Lowest First</option>
                                     <option value="high">Highest First</option>
                                 </select>
                             </div>
-
-                            <div className="flex justify-end gap-2 pt-2 border-t">
+                            {/* Apply / Reset */}
+                            <div className="flex justify-end gap-2 pt-2 border-t border-gray-700">
                                 <button
                                     onClick={() => {
                                         setOnlySale(draftOnly);
@@ -191,7 +183,7 @@ export default function ProductList({
                                         setCurrentPage(1);
                                         setFiltersOpen(false);
                                     }}
-                                    className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800 transition"
+                                    className="px-3 py-1 bg-orange-500 text-white rounded text-sm hover:bg-orange-600 transition"
                                 >
                                     Apply
                                 </button>
@@ -201,7 +193,7 @@ export default function ProductList({
                                         setDraftRating(0);
                                         setDraftSort('none');
                                     }}
-                                    className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition"
+                                    className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition"
                                 >
                                     Reset
                                 </button>
@@ -211,7 +203,7 @@ export default function ProductList({
                 </div>
             </div>
 
-
+            {/* Products Grid */}
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {currentProducts.map((product) => {
                     const rate = product.rating?.rate ?? 0;
@@ -228,69 +220,61 @@ export default function ProductList({
                         <div
                             key={product.id}
                             onClick={() => onCardClick(product)}
-                            className="relative bg-white rounded-2xl shadow-md p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                            className="relative bg-black/80 rounded-2xl shadow-xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-orange-500 text-white"
                         >
-
-                            {product.onSale && (
-                                <div className="absolute bottom-3 right-3 z-20 bg-red-500 text-white text-[10px] font-semibold px-2 py-1 rounded-full animate-pulse">
-                                    SALE
-                                </div>
-                            )}
-
-
+                            {/* Promo badge (как было) */}
                             {promo && IconComp && (
                                 <div
-                                    className={`absolute top-3 left-3 z-20 ${promo.color} text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs`}
+                                    className={`${promo.color} absolute top-8 left-8 z-20 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs`}
                                 >
                                     <IconComp className="w-4 h-4" />
                                     <span>{promo.label}</span>
                                 </div>
                             )}
 
-
-                            <div className="relative aspect-[4/3] w-full mb-4 rounded-xl overflow-hidden bg-white">
+                            {/* Image */}
+                            <div className="relative w-full h-60 mb-4 rounded-lg overflow-hidden border-2 border-white bg-white flex items-center justify-center">
                                 <Image
                                     src={product.image}
                                     alt={product.title}
-                                    fill
-                                    sizes="(max-width:768px) 100vw, 33vw"
-                                    className="object-contain rounded-xl transition duration-300 ease-in-out hover:scale-105"
+                                    layout="fill"
+                                    objectFit="contain"
                                 />
                             </div>
 
-
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+                            {/* Title */}
+                            <h3 className="text-lg font-bold line-clamp-2 mb-2">
                                 {product.title}
                             </h3>
 
-
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="flex gap-[3px]">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className={`w-3 h-3 rounded-full ${i < Math.round(rate) ? dotColor : 'bg-gray-200'
-                                                }`}
-                                        />
-                                    ))}
-                                </div>
-                                <span className="text-sm text-gray-500">({count})</span>
-                            </div>
-
-                            {/* Price */}
-                            <div className="flex items-center gap-2 mt-2">
-                                {product.onSale && (
-                                    <span className="text-gray-400 line-through text-sm">
-                                        ${product.oldPrice?.toFixed(2)}
+                            {/* Rating + Price */}
+                            <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center gap-1">
+                                    <div className={`w-2 h-2 rounded-full ${dotColor}`}></div>
+                                    <span className="text-sm font-semibold">
+                                        {rate.toFixed(1)} ({count})
                                     </span>
-                                )}
-                                <span
-                                    className={`font-bold text-lg ${product.onSale ? 'text-red-600' : 'text-black'
-                                        }`}
-                                >
-                                    ${product.price.toFixed(2)}
-                                </span>
+                                </div>
+                                <div className="flex items-baseline gap-2">
+                                    {product.onSale && product.oldPrice && (
+                                        <span className="text-sm text-gray-500 line-through">
+                                            ${product.oldPrice.toFixed(2)}
+                                        </span>
+                                    )}
+                                    <span className="text-xl font-bold text-orange-500">
+                                        ${product.price.toFixed(2)}
+                                    </span>
+                                </div>
                             </div>
+
+                            {/* SALE под ценой, справа */}
+                            {product.onSale && (
+                                <div className="flex justify-end mb-2">
+                                    <div className="bg-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
+                                        SALE
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     );
                 })}

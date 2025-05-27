@@ -1,3 +1,4 @@
+// hooks/useProductState.ts
 import { useState, useEffect } from 'react';
 
 interface Product {
@@ -17,10 +18,12 @@ interface Product {
   category: string;
 }
 
+type Category = 'all' | 'men' | 'women' | 'jewelery' | 'electronics';
+
 export function useProductState() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'men' | 'women' | 'jewelry'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<Category>('all');
 
   useEffect(() => {
     const STORAGE_KEY = 'enrichedProducts';
@@ -50,12 +53,14 @@ export function useProductState() {
               category: item.category,
             };
 
+            // случайные распродажи
             if (Math.random() < 0.3) {
               copy.onSale = true;
               copy.oldPrice = item.price;
               copy.price = +(item.price * 0.8).toFixed(2);
             }
 
+            // случайный бейдж
             const rate = item.rating?.rate ?? 0;
             if (rate >= 3 && Math.random() < 0.7) {
               const b = BADGES[Math.floor(Math.random() * BADGES.length)];
@@ -72,11 +77,13 @@ export function useProductState() {
     }
   }, []);
 
+  // Применяем фильтр по категории
   const displayedProducts = products.filter(p => {
     if (categoryFilter === 'all') return true;
     if (categoryFilter === 'men') return p.category === "men's clothing";
     if (categoryFilter === 'women') return p.category === "women's clothing";
-    if (categoryFilter === 'jewelry') return p.category === 'jewelery';
+    if (categoryFilter === 'jewelery') return p.category === 'jewelery';
+    if (categoryFilter === 'electronics') return p.category === 'electronics';
     return true;
   });
 
@@ -87,4 +94,4 @@ export function useProductState() {
     categoryFilter,
     setCategoryFilter,
   };
-} 
+}

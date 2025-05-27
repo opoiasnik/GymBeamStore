@@ -23,12 +23,13 @@ const Pagination: React.FC<PaginationProps> = ({
                         <button
                             onClick={() => paginate(number)}
                             className="
-                w-6 h-6 sm:w-8 sm:h-8 
-                rounded-md 
-                bg-black text-white 
+                w-6 h-6 sm:w-8 sm:h-8
+                rounded-md
+                bg-black text-white
                 text-xs sm:text-sm
                 flex items-center justify-center
-                hover:bg-gray-800 transition
+                border border-orange-500
+                hover:bg-orange-500 transition
               "
                         >
                             {number}

@@ -25,7 +25,6 @@ export default function UserProfilePage() {
     });
     const [editingPromo, setEditingPromo] = useState(false);
     const [loading, setLoading] = useState(true);
-
     const originalUsernameRef = useRef<string | null>(null);
 
     useEffect(() => {
@@ -62,122 +61,87 @@ export default function UserProfilePage() {
     }, [router]);
 
     const handlePromoChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-        const { value } = e.target;
-        setProfile(p => ({ ...p, promoCode: value }));
+        setProfile(p => ({ ...p, promoCode: e.target.value }));
     };
 
     const handlePromoEditToggle = () => {
         if (editingPromo) {
-            const originalUsername = originalUsernameRef.current;
-            if (originalUsername) {
-                localStorage.setItem(`profile_${originalUsername}`, JSON.stringify(profile));
-            }
+            const original = originalUsernameRef.current;
+            if (original) localStorage.setItem(`profile_${original}`, JSON.stringify(profile));
         }
         setEditingPromo(e => !e);
     };
 
     const handleDone = () => {
-        const originalUsername = originalUsernameRef.current;
-        if (originalUsername) {
-            localStorage.setItem(`profile_${originalUsername}`, JSON.stringify(profile));
-        }
-        router.push('/');
+        const original = originalUsernameRef.current;
+        if (original) localStorage.setItem(`profile_${original}`, JSON.stringify(profile));
+        router.push('/products');
     };
 
     const initial = profile.email ? profile.email.charAt(0).toUpperCase() : '';
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-black text-white">
                 <span>Loading profile...</span>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <div className="relative bg-gray-200 h-32 sm:h-40">
+        <div className="min-h-screen bg-black text-white">
+            <div className="relative bg-black/80 h-32 sm:h-40">
                 <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 100">
                     <path
-                        fill="#F3F4F6"
+                        fill="#000"
                         d="M0,32 C360,96 720,0 1080,64 1260,96 1440,32 1440,32 L1440,100 L0,100 Z"
                     />
                 </svg>
             </div>
+
             <div className="flex justify-center -mt-12 sm:-mt-16 relative">
-                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-black flex items-center justify-center">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-orange-500 bg-black flex items-center justify-center">
                     <span className="text-white text-3xl sm:text-4xl font-bold">{initial}</span>
                 </div>
             </div>
+
             <div className="mt-6 sm:mt-8 px-4 sm:px-6 lg:px-24">
-                <div className="max-w-md sm:max-w-lg mx-auto space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={profile.email}
-                            readOnly
-                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        <input
-                            type="text"
-                            name="firstname"
-                            value={profile.firstname || ''}
-                            readOnly
-                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        <input
-                            type="text"
-                            name="lastname"
-                            value={profile.lastname || ''}
-                            readOnly
-                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={profile.username}
-                            readOnly
-                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-                            placeholder="Enter your username"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            value={profile.phone}
-                            readOnly
-                            className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-                            placeholder="Enter your phone"
-                        />
-                    </div>
+                <div className="max-w-md sm:max-w-lg mx-auto space-y-6 bg-black/80 p-6 rounded-xl border border-orange-500">
+                    {[
+                        { label: 'E-Mail', value: profile.email },
+                        { label: 'First Name', value: profile.firstname || '' },
+                        { label: 'Last Name', value: profile.lastname || '' },
+                        { label: 'Username', value: profile.username },
+                        { label: 'Phone', value: profile.phone },
+                    ].map((field) => (
+                        <div key={field.label}>
+                            <label className="block text-sm font-medium text-white mb-1">
+                                {field.label}
+                            </label>
+                            <input
+                                type="text"
+                                value={field.value}
+                                readOnly
+                                className="w-full px-3 py-2 bg-black/60 border border-gray-700 rounded focus:outline-none text-white"
+                            />
+                        </div>
+                    ))}
+
                     <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Promo Code</label>
+                        <label className="block text-sm font-medium text-white mb-1">
+                            Promo Code
+                        </label>
                         <input
                             type="text"
-                            name="promoCode"
                             value={profile.promoCode}
                             onChange={handlePromoChange}
                             disabled={!editingPromo}
-                            className={`w-full px-3 py-2 border ${editingPromo ? 'border-blue-500 bg-white' : 'border-gray-300 bg-gray-200'
-                                } focus:outline-none`}
-                            placeholder="Enter your promo code"
+                            className={`w-full px-3 py-2 border ${editingPromo ? 'border-orange-500 bg-black/60' : 'border-gray-700 bg-black/60'
+                                } rounded focus:outline-none text-white`}
                         />
                         <button
                             onClick={handlePromoEditToggle}
-                            className="absolute top-2.5 right-3 text-gray-600 hover:text-gray-900"
+                            className="absolute top-2.5 right-3 text-gray-400 hover:text-orange-500 transition"
                             aria-label={editingPromo ? 'Save code' : 'Edit code'}
                         >
                             {editingPromo ? (
@@ -187,9 +151,10 @@ export default function UserProfilePage() {
                             )}
                         </button>
                     </div>
+
                     <button
                         onClick={handleDone}
-                        className="w-full py-3 bg-black text-white font-semibold rounded tracking-wide hover:bg-gray-800 transition"
+                        className="w-full py-3 bg-orange-500 text-black font-semibold rounded tracking-wide hover:bg-orange-600 transition"
                     >
                         Done
                     </button>

@@ -13,11 +13,9 @@ export default function ProductPage() {
 
     useEffect(() => {
         if (!id) {
-
             router.replace('/');
             return;
         }
-
 
         const raw = localStorage.getItem('enrichedProducts');
         if (raw) {
@@ -29,15 +27,16 @@ export default function ProductPage() {
             }
         }
 
-
         router.replace('/');
     }, [id, router]);
 
     if (!product) return null;
 
     return (
-        <main className="container mx-auto py-8">
-            <ProductDetails product={product} />
+        <main className="bg-black min-h-screen py-8">
+            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ProductDetails product={product} />
+            </div>
         </main>
     );
 }
