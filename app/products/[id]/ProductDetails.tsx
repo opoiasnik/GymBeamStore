@@ -17,6 +17,7 @@ interface ProductDetailsProps {
     product: Product;
 }
 
+
 const CLOTHING_SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const;
 const CLOTHING_COLORS = [
     { name: 'Black', bg: 'bg-black' },
