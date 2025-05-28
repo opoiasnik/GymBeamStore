@@ -83,14 +83,14 @@ export default function UserProfilePage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-black text-white">
-                <span>Loading profile...</span>
+                <span className="text-base sm:text-lg">Loading profile...</span>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-black text-white">
-            <div className="relative bg-black/80 h-32 sm:h-40">
+            <div className="relative bg-black/80 h-24 sm:h-32">
                 <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 100">
                     <path
                         fill="#000"
@@ -100,13 +100,13 @@ export default function UserProfilePage() {
             </div>
 
             <div className="flex justify-center -mt-12 sm:-mt-16 relative">
-                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-orange-500 bg-black flex items-center justify-center">
-                    <span className="text-white text-3xl sm:text-4xl font-bold">{initial}</span>
+                <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-4 border-orange-500 bg-black flex items-center justify-center">
+                    <span className="text-white text-2xl sm:text-4xl font-bold">{initial}</span>
                 </div>
             </div>
 
             <div className="mt-6 sm:mt-8 px-4 sm:px-6 lg:px-24">
-                <div className="max-w-md sm:max-w-lg mx-auto space-y-6 bg-black/80 p-6 rounded-xl border border-orange-500">
+                <div className="max-w-xs sm:max-w-md md:max-w-lg mx-auto space-y-4 sm:space-y-6 bg-black/80 p-4 sm:p-6 md:p-8 rounded-xl border border-orange-500">
                     {[
                         { label: 'E-Mail', value: profile.email },
                         { label: 'First Name', value: profile.firstname || '' },
@@ -115,20 +115,20 @@ export default function UserProfilePage() {
                         { label: 'Phone', value: profile.phone },
                     ].map((field) => (
                         <div key={field.label}>
-                            <label className="block text-sm font-medium text-white mb-1">
+                            <label className="block text-xs sm:text-sm font-medium text-white mb-1">
                                 {field.label}
                             </label>
                             <input
                                 type="text"
                                 value={field.value}
                                 readOnly
-                                className="w-full px-3 py-2 bg-black/60 border border-gray-700 rounded focus:outline-none text-white"
+                                className="w-full px-2 sm:px-3 py-1 sm:py-2 bg-black/60 border border-gray-700 rounded focus:outline-none text-sm sm:text-base text-white"
                             />
                         </div>
                     ))}
 
                     <div className="relative">
-                        <label className="block text-sm font-medium text-white mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-white mb-1">
                             Promo Code
                         </label>
                         <input
@@ -136,25 +136,25 @@ export default function UserProfilePage() {
                             value={profile.promoCode}
                             onChange={handlePromoChange}
                             disabled={!editingPromo}
-                            className={`w-full px-3 py-2 border ${editingPromo ? 'border-orange-500 bg-black/60' : 'border-gray-700 bg-black/60'
-                                } rounded focus:outline-none text-white`}
+                            className={`w-full px-2 sm:px-3 py-1 sm:py-2 border rounded focus:outline-none text-sm sm:text-base text-white
+                ${editingPromo ? 'border-orange-500 bg-black/60' : 'border-gray-700 bg-black/60'}`}
                         />
                         <button
                             onClick={handlePromoEditToggle}
-                            className="absolute top-2.5 right-3 text-gray-400 hover:text-orange-500 transition"
+                            className="absolute top-2 right-2 sm:top-2.5 sm:right-3 text-gray-400 hover:text-orange-500 transition"
                             aria-label={editingPromo ? 'Save code' : 'Edit code'}
                         >
                             {editingPromo ? (
-                                <CheckIcon className="w-5 h-5" />
+                                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                             ) : (
-                                <PencilSquareIcon className="w-5 h-5" />
+                                <PencilSquareIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                             )}
                         </button>
                     </div>
 
                     <button
                         onClick={handleDone}
-                        className="w-full py-3 bg-orange-500 text-black font-semibold rounded tracking-wide hover:bg-orange-600 transition"
+                        className="w-full py-2 sm:py-3 bg-orange-500 text-black font-semibold rounded tracking-wide hover:bg-orange-600 transition text-sm sm:text-base"
                     >
                         Done
                     </button>

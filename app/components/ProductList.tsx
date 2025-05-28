@@ -59,7 +59,6 @@ export default function ProductList({
 
     const [promoMap, setPromoMap] = useState<Record<number, PromoInfo | null>>({});
 
-    // Генерация и сохранение промо-бейджей
     useEffect(() => {
         const key = 'promoMap';
         const stored = localStorage.getItem(key);
@@ -79,7 +78,6 @@ export default function ProductList({
         setPromoMap(map);
     }, [products]);
 
-    // Закрыть фильтры кликом вне
     useEffect(() => {
         const onClickOutside = (e: MouseEvent) => {
             if (filtersOpen && ref.current && !ref.current.contains(e.target as Node)) {
@@ -90,7 +88,6 @@ export default function ProductList({
         return () => window.removeEventListener('mousedown', onClickOutside);
     }, [filtersOpen]);
 
-    // Применение фильтров и сортировки
     let filtered = products
         .filter((p) => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
         .filter((p) => (!onlySale || p.onSale))
@@ -107,8 +104,7 @@ export default function ProductList({
     const currentProducts = filtered.slice(idxFirst, idxLast);
 
     return (
-        <div className="bg-black px-4 sm:px-6 lg:px-8 py-6 max-w-screen-xl mx-auto text-white">
-            {/* Search + Filters */}
+        <div className="bg-black px-4 py-6 max-w-screen-xl mx-auto text-white">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                 <SearchBar setSearchTerm={setSearchTerm} />
                 <div className="relative" ref={ref}>
@@ -124,8 +120,7 @@ export default function ProductList({
                         Filters ▼
                     </button>
                     {filtersOpen && (
-                        <div className="absolute right-0 mt-2 w-64 bg-black border border-orange-500 rounded-lg shadow-lg p-4 space-y-3 z-20 text-white">
-                            {/* Only SALE */}
+                        <div className="absolute right-0 mt-2 w-64 bg-black border border-orange-500 rounded-lg shadow-lg p-4 space-y-3 z-50 text-white">
                             <div className="flex items-center">
                                 <input
                                     id="draftOnly"
@@ -138,7 +133,6 @@ export default function ProductList({
                                     Only SALE
                                 </label>
                             </div>
-                            {/* Min Rating */}
                             <div className="flex items-center">
                                 <label htmlFor="draftRating" className="text-sm w-24 font-semibold">
                                     Min Rating:
@@ -157,7 +151,6 @@ export default function ProductList({
                                     <option value={5}>5★</option>
                                 </select>
                             </div>
-                            {/* Sort Price */}
                             <div className="flex items-center">
                                 <label htmlFor="draftSort" className="text-sm w-24 font-semibold">
                                     Sort Price:
@@ -173,7 +166,6 @@ export default function ProductList({
                                     <option value="high">Highest First</option>
                                 </select>
                             </div>
-                            {/* Apply / Reset */}
                             <div className="flex justify-end gap-2 pt-2 border-t border-gray-700">
                                 <button
                                     onClick={() => {
@@ -203,7 +195,6 @@ export default function ProductList({
                 </div>
             </div>
 
-            {/* Products Grid */}
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {currentProducts.map((product) => {
                     const rate = product.rating?.rate ?? 0;
@@ -222,7 +213,6 @@ export default function ProductList({
                             onClick={() => onCardClick(product)}
                             className="relative bg-black/80 rounded-2xl shadow-xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-orange-500 text-white"
                         >
-                            {/* Promo badge (как было) */}
                             {promo && IconComp && (
                                 <div
                                     className={`${promo.color} absolute top-8 left-8 z-20 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs`}
@@ -232,7 +222,6 @@ export default function ProductList({
                                 </div>
                             )}
 
-                            {/* Image */}
                             <div className="relative w-full h-60 mb-4 rounded-lg overflow-hidden border-2 border-white bg-white flex items-center justify-center">
                                 <Image
                                     src={product.image}
@@ -242,12 +231,10 @@ export default function ProductList({
                                 />
                             </div>
 
-                            {/* Title */}
                             <h3 className="text-lg font-bold line-clamp-2 mb-2">
                                 {product.title}
                             </h3>
 
-                            {/* Rating + Price */}
                             <div className="flex items-center justify-between mb-1">
                                 <div className="flex items-center gap-1">
                                     <div className={`w-2 h-2 rounded-full ${dotColor}`}></div>
@@ -267,7 +254,6 @@ export default function ProductList({
                                 </div>
                             </div>
 
-                            {/* SALE под ценой, справа */}
                             {product.onSale && (
                                 <div className="flex justify-end mb-2">
                                     <div className="bg-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
@@ -280,7 +266,6 @@ export default function ProductList({
                 })}
             </div>
 
-            {/* Pagination */}
             <div className="mt-8">
                 <Pagination
                     productsPerPage={productsPerPage}

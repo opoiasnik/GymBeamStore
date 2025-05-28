@@ -1,4 +1,3 @@
-// components/ProductDetails.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -106,7 +105,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const isJewelry = /jewelery/i.test(product.category);
     const isElectronics = /electronics/i.test(product.category);
 
-    // fetch recommendations from localStorage cache
     useEffect(() => {
         const raw = localStorage.getItem('enrichedProducts');
         if (raw) {
@@ -120,7 +118,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     return (
         <div className="bg-black min-h-screen py-8">
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                {/* Back to Products */}
                 <button
                     onClick={() => router.push('/products')}
                     className="text-orange-500 hover:text-orange-400 font-medium"
@@ -128,9 +125,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     &larr; Back to Products
                 </button>
 
-                {/* Main content */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-black/80 p-6 rounded-xl border border-orange-500">
-                    {/* Gallery */}
                     <div>
                         <div className="mb-4 flex gap-4">
                             {[product.image, product.image, product.image].map((src, i) => (
@@ -161,13 +156,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         </div>
                     </div>
 
-                    {/* Info & selectors */}
                     <div className="flex flex-col justify-between">
                         <div>
                             <h1 className="text-3xl font-semibold text-white">{product.title}</h1>
                             <p className="text-sm text-gray-400 uppercase mt-1">{product.category}</p>
 
-                            {/* Rating */}
                             <div className="flex items-center mt-3 gap-2">
                                 <div className="flex">
                                     {Array.from({ length: 5 }).map((_, i) => (
@@ -179,8 +172,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 </div>
                                 <span className="text-sm text-gray-400">({count})</span>
                             </div>
-
-                            {/* Price */}
                             <div className="flex items-baseline gap-4 mt-4">
                                 {product.onSale && product.oldPrice && (
                                     <>
@@ -193,7 +184,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 <span className="text-3xl font-bold text-orange-500">${product.price.toFixed(2)}</span>
                             </div>
 
-                            {/* Dynamic selectors */}
                             <div className="mt-6 space-y-4">
                                 {isClothing && (
                                     <>
@@ -388,7 +378,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 onClick={() => router.push(`/products/${rec.id}`)}
                                 className="bg-black/80 rounded-lg p-4 border border-orange-500 cursor-pointer hover:shadow-xl transition"
                             >
-                                {/* White background behind image */}
                                 <div className="relative w-full h-32 mb-2 bg-white rounded">
                                     <Image
                                         src={rec.image}

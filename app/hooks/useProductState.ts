@@ -53,14 +53,14 @@ export function useProductState() {
               category: item.category,
             };
 
-            // случайные распродажи
+        
             if (Math.random() < 0.3) {
               copy.onSale = true;
               copy.oldPrice = item.price;
               copy.price = +(item.price * 0.8).toFixed(2);
             }
 
-            // случайный бейдж
+      
             const rate = item.rating?.rate ?? 0;
             if (rate >= 3 && Math.random() < 0.7) {
               const b = BADGES[Math.floor(Math.random() * BADGES.length)];
@@ -77,7 +77,6 @@ export function useProductState() {
     }
   }, []);
 
-  // Применяем фильтр по категории
   const displayedProducts = products.filter(p => {
     if (categoryFilter === 'all') return true;
     if (categoryFilter === 'men') return p.category === "men's clothing";

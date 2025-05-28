@@ -23,9 +23,8 @@ export default function LandingPage() {
                     />
                 </div>
 
-                {/* Text and button layer */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
-                    <div className="bg-black/80 rounded-xl p-8 flex flex-col items-center max-w-xl border border-orange-500 shadow-xl">
+                    <div className="bg-black/80 rounded-xl p-4 sm:p-6 md:p-8 flex flex-col items-center max-w-sm sm:max-w-md md:max-w-xl border border-orange-500 shadow-xl">
                         <div className="flex items-center gap-2 mb-2 select-none">
                             <span className="italic font-normal text-4xl text-white">Gym</span>
                             <span className="italic font-bold text-4xl text-orange-500">Beam</span>

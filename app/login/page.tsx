@@ -95,7 +95,7 @@ export default function LoginPage() {
     return (
         <div className="flex flex-col lg:flex-row min-h-screen">
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 lg:px-24 bg-black min-h-screen">
-                <div className="max-w-md w-full mx-auto space-y-6 bg-black/80 rounded-xl border border-orange-500 shadow-xl p-6 mt-8">
+                <div className="max-w-md w-full mx-auto space-y-6 bg-black/80 rounded-xl border border-orange-500 shadow-xl p-4 sm:p-6 md:p-8 mt-8">
                     <div className="flex items-center gap-2 mb-6 justify-center">
                         <span className="italic font-normal text-3xl text-white">Gym</span>
                         <span className="italic font-bold text-3xl text-orange-500">Beam</span>
