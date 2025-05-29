@@ -1,7 +1,7 @@
 // hooks/useProductState.ts
 import { useState, useEffect } from 'react';
 
-interface Product {
+export interface Product {
   id: number;
   title: string;
   description: string;
@@ -18,7 +18,7 @@ interface Product {
   category: string;
 }
 
-type Category = 'all' | 'men' | 'women' | 'jewelery' | 'electronics';
+export type Category = 'all' | 'men' | 'women' | 'jewelery' | 'electronics';
 
 export function useProductState() {
   const [products, setProducts] = useState<Product[]>([]);
